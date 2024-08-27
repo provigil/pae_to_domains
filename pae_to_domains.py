@@ -1,18 +1,15 @@
 def parse_pae_file(pae_json_file):
-    import json, numpy
+    import json
+    import numpy
 
-    with open(pae_json_file, 'rt') as f:
-        data = json.load(f)[0]
+    with open(pae_json_file, 'r') as f:
+        data = json.load(f)
+        #keys = data.keys()
+        #print(keys)
 
-    if 'residue1' in data and 'distance' in data:
-        # Legacy PAE format, keep for backwards compatibility.
-        r1, d = data['residue1'], data['distance']
-        size = max(r1)
-        matrix = numpy.empty((size, size), dtype=numpy.float64)
-        matrix.ravel()[:] = d
-    elif 'predicted_aligned_error' in data:
+    if 'pae' in data:
         # New PAE format.
-        matrix = numpy.array(data['predicted_aligned_error'], dtype=numpy.float64)
+        matrix = numpy.array(data['pae'], dtype=numpy.float64)
     else:
         raise ValueError('Invalid PAE JSON format.')
     
@@ -139,4 +136,3 @@ if __name__ == '__main__':
             outfile.write(','.join([str(e) for e in c])+'\n')
     end_time = time()
     print(f'Wrote {len(clusters)} clusters to {output_file}. Biggest cluster contains {max_len} residues. Run time was {end_time-start_time:.2f} seconds.')
-    
